@@ -3,7 +3,7 @@ from collections import deque
 from matplotlib.animation import FuncAnimation
 
 class EMGPlotter:
-    def __init__(self, length=500, vmin=0.0, vmax=5.0):
+    def __init__(self, length=1000, vmin=0.0, vmax=5.0):
         self.length = length
         self.data = deque([0.0] * length, maxlen=length)
         self.fig, self.ax = plt.subplots()

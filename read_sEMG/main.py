@@ -2,18 +2,19 @@ import threading
 import sys
 from sEMG_sensor import open_serial, read_emg
 from sEMG_plotter import EMGPlotter
+import matplotlib.pyplot as plt
+import serial
 
 
-def data_reader(ser, plotter):
-    """Continuously read EMG and append to plotter's data buffer."""
-    try:
-        while True:
+def data_reader(ser, plotter, stop_event):
+    """Continuously read EMG and append to plotter's data buffer until stopped."""
+    while not stop_event.is_set():
+        try:
             value = read_emg(ser)
             if value is not None:
                 plotter.data.append(value)
-    except Exception as e:
-        # Log and exit thread cleanly
-        print(f"Data reader error: {e}", file=sys.stderr)
+        except serial.SerialException:
+            break
 
 
 def main():
@@ -26,16 +27,22 @@ def main():
 
     plotter = EMGPlotter(length=1000)
 
+    # Event to signal thread to stop
+    stop_event = threading.Event()
+
     # Start background thread to read serial data
-    thread = threading.Thread(target=data_reader, args=(ser, plotter), daemon=True)
+    thread = threading.Thread(target=data_reader, args=(ser, plotter, stop_event), daemon=True)
     thread.start()
 
-    # Start animation
+    # Start animation and show plot
     ani = plotter.animate(interval=20)  # 20 ms -> ~50 FPS
-    plt = plotter.fig.canvas.manager.canvas.figure.canvas.manager.window
-    import matplotlib.pyplot as plt_show
-    plt_show.show()
-    ser.close()
+    try:
+        plt.show()
+    finally:
+        # Signal thread to stop and close serial
+        stop_event.set()
+        if ser and ser.is_open:
+            ser.close()
 
 if __name__ == '__main__':
     main()
