@@ -14,11 +14,11 @@ class sEMGplotter:
         rows, cols = len(self.fields), 1
         self.fig, axes = plt.subplots(rows, cols, figsize=figsize)
 
-        self.axes = axes.reshape(-1)
+        # self.axes = axes.reshape(-1)
 
         # if cols == 1:
         #     axes = [axes]
-        # self.axes = axes
+        self.axes = axes
 
         self.lines = {}
         for i, field in enumerate(self.fields):
