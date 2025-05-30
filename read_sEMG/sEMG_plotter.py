@@ -1,33 +1,55 @@
 import matplotlib.pyplot as plt
-from collections import deque
 from matplotlib.animation import FuncAnimation
 
-class EMGPlotter:
-    def __init__(self, length=1000, vmin=0.0, vmax=5.0):
-        self.length = length
-        self.data = deque([0.0] * length, maxlen=length)
-        self.fig, self.ax = plt.subplots()
-        self.line, = self.ax.plot(range(length), list(self.data))
-        self.ax.set_ylim(vmin, vmax)
-        self.ax.set_title('Real-time EMG (ENV)')
-        self.ax.set_xlabel('Sample')
-        self.ax.set_ylabel('Voltage (V)')
+class sEMGplotter:
+    def __init__(self,
+                 sensor_receiver,                   
+                 fields=('A0', 'A1', 'A2', 'A3'),   
+                 figsize=(10, 8),                    
+                 interval=10):               
+    
+        self.receiver = sensor_receiver
+        self.fields = list(fields)
 
-    def init_plot(self):
-        self.line.set_ydata([0] * self.length)
-        return (self.line,)
+        rows, cols = len(self.fields), 1
+        self.fig, axes = plt.subplots(rows, cols, figsize=figsize)
 
-    def update_plot(self, frame):
-        self.line.set_ydata(list(self.data))
-        return (self.line,)
+        self.axes = axes.reshape(-1)
 
-    def animate(self, interval=20):
-        # interval in milliseconds; cache_frame_data=False avoids warning
-        return FuncAnimation(
+        # if cols == 1:
+        #     axes = [axes]
+        # self.axes = axes
+
+        self.lines = {}
+        for i, field in enumerate(self.fields):
+            ax = self.axes[i]
+            ax.set_title(f"{field}")
+            line, = ax.plot([], [], label=field)
+            ax.legend()
+            self.lines[field] = line
+
+        self.ani = FuncAnimation(
             self.fig,
-            self.update_plot,
-            init_func=self.init_plot,
-            blit=True,
+            self.update,
             interval=interval,
             cache_frame_data=False
         )
+
+    def update(self, frame):
+        self.receiver.process_chunk()
+
+        artists = []
+        for field, line in self.lines.items():
+            data = list(self.receiver.data.get(field, []))
+            line.set_data(range(len(data)), data)
+            ax = line.axes
+            ax.relim()
+            ax.autoscale_view()
+
+            artists.append(line)
+
+        return artists
+
+    def show(self):
+        plt.tight_layout()
+        plt.show()
