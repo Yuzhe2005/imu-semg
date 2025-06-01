@@ -1,6 +1,6 @@
 import struct
 
-def parse_all_data(raw_bytes):
+def parse_all_data(raw_bytes, buf):
 
 
     SYNC = b'\xAA\x55'
@@ -8,11 +8,11 @@ def parse_all_data(raw_bytes):
     results = []
 
     # buf = b''
-    buf = bytearray()
+    # buf = bytearray()
 
     for b in raw_bytes:
-        print("[Parse_all_data Check Point] This is the a byte of 'raw_bytes'\n")
-        print(b)
+        # print("[Parse_all_data Check Point] This is the a byte of 'raw_bytes'\n")
+        # print(b)
         # print(raw_bytes[1])
         # try:
         buf.append(b)
