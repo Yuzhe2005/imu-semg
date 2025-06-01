@@ -1,10 +1,10 @@
+# sEMG_sensor.py
 import serial
 
 def open_serial(port: str, baud: int = 1000000, timeout: float = 1.0):
     """Open and return a serial.Serial instance."""
     ser = serial.Serial(port, baud, timeout=timeout)
     return ser
-
 
 def read_emg(ser):
     """
