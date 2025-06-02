@@ -14,7 +14,8 @@ def main():
 
     imu0_buffer = IMUBuffer(WINDOW_SIZE)
     imu1_buffer = IMUBuffer(WINDOW_SIZE)
-    imu_all_buffer = IMUAllBuffer(imu0_buffer, imu1_buffer)
+    imu2_buffer = IMUBuffer(WINDOW_SIZE)
+    imu_all_buffer = IMUAllBuffer(imu0_buffer, imu1_buffer, imu2_buffer)
     # print("[IMU_ALL_BUFFER CREATED SUCCESSFULLY]")
 
     # Start serial reader thread

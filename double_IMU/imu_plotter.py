@@ -3,7 +3,7 @@ from matplotlib.animation import FuncAnimation
 
 class IMUPlotter:
     """
-    Creates a 2*3 grid of real-time plots for 6-axis IMU data stored in IMUBuffer.
+    Creates a grid of real-time plots for 6-axis IMU data stored in IMUBuffer.
     """
     def __init__(self, imu_all_buffer, window_size: int, field = ('ax', 'ay', 'az', 'gx', 'gy', 'gz'), interval_ms: int = 10):
         self.imu_all_buffer = imu_all_buffer
@@ -11,13 +11,13 @@ class IMUPlotter:
         self.fields = field
 
         # Create figure and axes
-        self.fig, self.axes = plt.subplots(2, 6, figsize=(15, 5)) #row and col will change when adding more sensors
+        self.fig, self.axes = plt.subplots(3, 6, figsize=(15, 7)) #row and col will change when adding more sensors
         plt.tight_layout(h_pad=2.0, w_pad=2.0)
 
         self.lines = {}
 
         # Initialize each subplot with titles, labels, and an empty Line2D
-        for imu_idx in range(2):
+        for imu_idx in range(3):
             for idx, field in enumerate(self.fields):
                 ax = self.axes[imu_idx][idx]
 
@@ -54,8 +54,10 @@ class IMUPlotter:
         for (imu_idx, field), line in self.lines.items():
             if imu_idx == 0:
                 data = self.imu_all_buffer.IMU0.get_all_data()
-            else:
+            elif imu_idx == 1:
                 data = self.imu_all_buffer.IMU1.get_all_data()
+            else:
+                data = self.imu_all_buffer.IMU2.get_all_data()
             
             # print("[DATA CREATED]")
             # print(data[0])

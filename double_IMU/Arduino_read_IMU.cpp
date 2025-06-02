@@ -7,6 +7,7 @@
 static const uint8_t TCA9548A_ADDR = 0x70;  // I²C address of TCA9548A MUX
 static const uint8_t MUX_CH0       = 0;     // MUX channel for IMU #1
 static const uint8_t MUX_CH7       = 7;     // MUX channel for IMU #2
+static const uint8_t MUX_CH4       = 4;     // MUX channel for IMU #4
 static const int     INT1_PIN      = 2;     // Arduino Due pin wired to both IMU INT1 lines (they can share)
 
 // Data‐packet for one 6-axis IMU (24 bytes total: 6 floats × 4 bytes each)
@@ -22,6 +23,7 @@ struct SixAxis {
 // Two sensor objects, one per channel
 Adafruit_LSM6DSOX sox0 = Adafruit_LSM6DSOX();  // IMU on channel 0
 Adafruit_LSM6DSOX sox7 = Adafruit_LSM6DSOX();  // IMU on channel 7
+Adafruit_LSM6DSOX sox4 = Adafruit_LSM6DSOX();  // IMU on channel 4
 
 // Helper: select a single channel on the TCA9548A
 void selectMuxChannel(uint8_t channel) {
@@ -73,6 +75,23 @@ void setup() {
   sox7.setGyroDataRate(LSM6DS_RATE_1_66K_HZ);
   sox7.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS);
   sox7.configInt1(false, true, true, false, false);
+
+// ——— Initialize IMU #3 (channel 4) —————————————————————————————————
+  selectMuxChannel(MUX_CH4);
+  if (!sox4.begin_I2C()) {
+    // If IMU #1 isn't found, halt and emit error
+    while (1) {
+      SerialUSB.println("ERROR: LSM6DSOX not found on MUX channel 4");
+      delay(500);
+    }
+  }
+  // Configure IMU #1: accel 1.66 kHz ±2 g, gyro 1.66 kHz ±250 dps
+  sox4.setAccelDataRate(LSM6DS_RATE_1_66K_HZ);
+  sox4.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
+  sox4.setGyroDataRate(LSM6DS_RATE_1_66K_HZ);
+  sox4.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS);
+  // Only route accel+gyro to INT1 (FIFO and tap disabled)
+  sox4.configInt1(false, true, true, false, false);
 }
 
 void loop() {
@@ -106,9 +125,23 @@ void loop() {
     packet7.gy = gyro7.gyro.y;
     packet7.gz = gyro7.gyro.z;
 
+     // ——— Read from IMU #3 (channel 4) —————————————————————————————————————
+    selectMuxChannel(MUX_CH4);
+    sensors_event_t accel4, gyro4, temp4;
+    sox4.getEvent(&accel4, &gyro4, &temp4);
+
+    SixAxis packet4;
+    packet4.ax = accel4.acceleration.x;
+    packet4.ay = accel4.acceleration.y;
+    packet4.az = accel4.acceleration.z;
+    packet4.gx = gyro4.gyro.x;
+    packet4.gy = gyro4.gyro.y;
+    packet4.gz = gyro4.gyro.z;
+
     // ——— Transmit both 6-axis packets (48 bytes total) ——————————————————————
     SerialUSB.write((uint8_t*)&packet0, sizeof(packet0));  // 24 bytes
     SerialUSB.write((uint8_t*)&packet7, sizeof(packet7));  // 24 bytes
+    SerialUSB.write((uint8_t*)&packet4, sizeof(packet4));  // 24 bytes
     // delay(5000);
   // }
 }

@@ -24,7 +24,7 @@ class IMUSerialReader:
         self.thread = threading.Thread(target=self._reader_thread, daemon=True)
 
         # Each packet is 6 floats = 6 * 4 bytes = 24 bytes
-        self.packet_size = 48  # bytes
+        self.packet_size = 4 * 6 * 3  # important: bytes
 
     def start(self):
         """Starts the background thread to read serial data."""
@@ -55,10 +55,6 @@ class IMUSerialReader:
                 continue  # skip malformed data
 
             self.imu_all_buffer.add_all_sample(arr)
-            # print(arr[0], arr[1], arr[2], arr[3], arr[4], arr[5])
-            # print('\n')
-            # print(arr[6], arr[7], arr[8], arr[9], arr[10], arr[11])
-
             # print("[DATA ADDED]")
 
         ser.close()
