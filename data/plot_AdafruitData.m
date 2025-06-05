@@ -9,6 +9,7 @@ end
 S = load(data_path);
 try
     IMUax = detrend(S.ax);
+    % IMUax = S.ax;
     IMUay = detrend(S.ay);
     IMUaz = detrend(S.ax);
     IMUgx = detrend(S.gx);
