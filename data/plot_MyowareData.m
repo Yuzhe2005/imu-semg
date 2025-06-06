@@ -1,4 +1,4 @@
-function plot_MyowareData(data_path, varargin)
+function [EMGA0, EMGA1, EMGA2, EMGA3] = plot_MyowareData(data_path, varargin)
 crop_range = [5, -1];
 for i = 1:2:length(varargin)
     if strcmp(varargin{i}, 'crop_range')
@@ -7,11 +7,18 @@ for i = 1:2:length(varargin)
 end
 
 S = load(data_path);
+% try 
+%     EMGA0 = detrend(S.A0);
+%     EMGA1 = detrend(S.A1);
+%     EMGA2 = detrend(S.A2);
+%     EMGA3 = detrend(S.A3);
+% catch
+
 try 
-    EMGA0 = detrend(S.A0);
-    EMGA1 = detrend(S.A1);
-    EMGA2 = detrend(S.A2);
-    EMGA3 = detrend(S.A3);
+    EMGA0 = (S.A0);
+    EMGA1 = (S.A1);
+    EMGA2 = (S.A2);
+    EMGA3 = (S.A3);
 catch
     disp("Didn't find the sensor data")
     return

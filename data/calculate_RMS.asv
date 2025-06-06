@@ -1,0 +1,73 @@
+function calculate_RMS(data_path, window_ms, varargin)
+%   plot_MyowareRMS('myData.mat', 200);             % 用200 ms窗口
+%   plot_MyowareRMS('myData.mat', 100, 'crop_range',[10,-5]);
+
+    fs = 1300;
+    [EMGA0, EMGA1, EMGA2, EMGA3] = plot_MyowareData('C:\Users\dwang\Desktop\IMU+sEMG\data\sEMG_data.mat', varargin{:});
+
+    %─── 2) 将 window_ms（毫秒）转换为"样本数"───
+    if ~(isscalar(window_ms) && window_ms > 0)
+        error('plot_MyowareRMS:BadWindow', 'window_ms 必须为正数（单位：ms）。');
+    end
+    % 例如，200 ms 窗口对应的样本数：
+    window_size = round(window_ms * fs / 1000);
+    if window_size < 1
+        window_size = 1;
+    end
+
+    %─── 3) 计算滑动窗口 RMS（rms_env = sqrt(movmean(x.^2, window_size))）───
+    rms0_env = sqrt( movmean(EMGA0.^2, window_size) );
+    rms1_env = sqrt( movmean(EMGA1.^2, window_size) );
+    rms2_env = sqrt( movmean(EMGA2.^2, window_size) );
+    rms3_env = sqrt( movmean(EMGA3.^2, window_size) );
+
+    %─── 4) 生成时间轴 t（单位：秒）───
+    N = length(rms0_env);
+    t = (0:(N-1)) / fs;  % 从 0 s 到 (N-1)/fs 秒
+
+    %─── 5) 绘图：2×2 子图，横轴为 t（秒），纵轴为 RMS 值 ───
+    figure;
+    subplot(2,2,1)
+    plot(t, rms0_env);
+    title(sprintf('Channel A0 RMS (窗口 = %d ms)', window_ms));
+    xlabel('时间 (s)');
+    ylabel('RMS 值');
+    grid on
+
+    subplot(2,2,2)
+    plot(t, rms1_env);
+    title(sprintf('Channel A1 RMS (窗口 = %d ms)', window_ms));
+    xlabel('时间 (s)');
+    ylabel('RMS 值');
+    grid on
+
+    subplot(2,2,3)
+    plot(t, rms2_env);
+    title(sprintf('Channel A2 RMS (窗口 = %d ms)', window_ms));
+    xlabel('时间 (s)');
+    ylabel('RMS 值');
+    grid on
+
+    subplot(2,2,4)
+    plot(t, rms3_env);
+    title(sprintf('Channel A3 RMS (窗口 = %d ms)', window_ms));
+    xlabel('时间 (s)');
+    ylabel('RMS 值');
+    grid on
+
+    %─── 如果希望把四条曲线画在同一张图里，可以这样做（可选） ───
+    %{
+    figure;
+    hold on;
+    plot(t, rms0_env);
+    plot(t, rms1_env);
+    plot(t, rms2_env);
+    plot(t, rms3_env);
+    legend('A0','A1','A2','A3');
+    title(sprintf('All Channels RMS (窗口 = %d ms)', window_ms));
+    xlabel('时间 (s)');
+    ylabel('RMS 值');
+    grid on;
+    hold off;
+    %}
+end
