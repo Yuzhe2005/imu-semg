@@ -34,6 +34,8 @@ class SensorReader:
             'A3': []
         }
 
+        self.running = False
+
     def cleanStorage(self):
         self.storage = {
             'A0': [],
@@ -45,9 +47,10 @@ class SensorReader:
     def record(self, duration=180):
         self.cleanStorage()
         start = time.time()
+        self.running = True
         print("[Start recording]")
         try:
-            while time.time() - start < duration:
+            while self.running and (time.time() - start) < duration:
                 raw = self.ser.read(self.packet_size)
                 if len(raw) < self.packet_size:
                     continue
@@ -65,8 +68,12 @@ class SensorReader:
                 self.storage['A1'].append(arr[1])
                 self.storage['A2'].append(arr[2])
                 self.storage['A3'].append(arr[3])
+
+            print(f"[Record time: {time.time() - start}s]")
         except Exception as e:
             print(f"Recording error: {e}", file=sys.stderr)
+        finally: 
+            self.running = False
 
     def get_all_data(self):
         def pad_or_copy(deq):
