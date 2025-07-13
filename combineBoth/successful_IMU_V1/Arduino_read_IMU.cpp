@@ -6,8 +6,8 @@
 // ——— CONFIG ——————————————————————————————————————————————————————————————
 static const uint8_t TCA9548A_ADDR = 0x70;  // I²C address of TCA9548A MUX
 static const uint8_t MUX_CH0       = 0;     // MUX channel for IMU #1
-static const uint8_t MUX_CH6       = 6;     // MUX channel for IMU #2
-static const uint8_t MUX_CH4       = 4;     // MUX channel for IMU #3
+static const uint8_t MUX_CH1       = 1;     // MUX channel for IMU #2
+static const uint8_t MUX_CH2       = 2;     // MUX channel for IMU #3
 static const uint8_t MUX_CH3       = 3;     // MUX channel for IMU #4
 static const int     INT1_PIN      = 2;     // Arduino Due pin wired to both IMU INT1 lines (they can share)
 
@@ -23,8 +23,8 @@ struct SixAxis {
 
 // Two sensor objects, one per channel
 Adafruit_LSM6DSOX sox0 = Adafruit_LSM6DSOX();  // IMU on channel 0
-Adafruit_LSM6DSOX sox6 = Adafruit_LSM6DSOX();  // IMU on channel 6
-Adafruit_LSM6DSOX sox4 = Adafruit_LSM6DSOX();  // IMU on channel 4
+Adafruit_LSM6DSOX sox1 = Adafruit_LSM6DSOX();  // IMU on channel 1
+Adafruit_LSM6DSOX sox2 = Adafruit_LSM6DSOX();  // IMU on channel 2
 Adafruit_LSM6DSOX sox3 = Adafruit_LSM6DSOX();  // IMU on channel 3
 
 // Helper: select a single channel on the TCA9548A
@@ -62,38 +62,38 @@ void setup() {
   // Only route accel+gyro to INT1 (FIFO and tap disabled)
   sox0.configInt1(false, true, true, false, false);
 
-  // ——— Initialize IMU #2 (channel 6) —————————————————————————————————
-  selectMuxChannel(MUX_CH6);
-  if (!sox6.begin_I2C()) {
+  // ——— Initialize IMU #2 (channel 1) —————————————————————————————————
+  selectMuxChannel(MUX_CH1);
+  if (!sox1.begin_I2C()) {
     // If IMU #2 isn't found, halt and emit error
     while (1) {
-      SerialUSB.println("ERROR: LSM6DSOX not found on MUX channel 6");
+      SerialUSB.println("ERROR: LSM6DSOX not found on MUX channel 1");
       delay(500);
     }
   }
   // Configure IMU #2: same data rates/ranges as IMU #1
-  sox6.setAccelDataRate(LSM6DS_RATE_1_66K_HZ);
-  sox6.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
-  sox6.setGyroDataRate(LSM6DS_RATE_1_66K_HZ);
-  sox6.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS);
-  sox6.configInt1(false, true, true, false, false);
+  sox1.setAccelDataRate(LSM6DS_RATE_1_66K_HZ);
+  sox1.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
+  sox1.setGyroDataRate(LSM6DS_RATE_1_66K_HZ);
+  sox1.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS);
+  sox1.configInt1(false, true, true, false, false);
 
-// ——— Initialize IMU #3 (channel 4) —————————————————————————————————
-  selectMuxChannel(MUX_CH4);
-  if (!sox4.begin_I2C()) {
+// ——— Initialize IMU #3 (channel 2) —————————————————————————————————
+  selectMuxChannel(MUX_CH2);
+  if (!sox2.begin_I2C()) {
     // If IMU #1 isn't found, halt and emit error
     while (1) {
-      SerialUSB.println("ERROR: LSM6DSOX not found on MUX channel 4");
+      SerialUSB.println("ERROR: LSM6DSOX not found on MUX channel 2");
       delay(500);
     }
   }
   // Configure IMU #1: accel 1.66 kHz ±2 g, gyro 1.66 kHz ±250 dps
-  sox4.setAccelDataRate(LSM6DS_RATE_1_66K_HZ);
-  sox4.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
-  sox4.setGyroDataRate(LSM6DS_RATE_1_66K_HZ);
-  sox4.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS);
+  sox2.setAccelDataRate(LSM6DS_RATE_1_66K_HZ);
+  sox2.setAccelRange(LSM6DS_ACCEL_RANGE_2_G);
+  sox2.setGyroDataRate(LSM6DS_RATE_1_66K_HZ);
+  sox2.setGyroRange(LSM6DS_GYRO_RANGE_250_DPS);
   // Only route accel+gyro to INT1 (FIFO and tap disabled)
-  sox4.configInt1(false, true, true, false, false);
+  sox2.configInt1(false, true, true, false, false);
 
   // ——— Initialize IMU #4 (channel 3) —————————————————————————————————
   selectMuxChannel(MUX_CH3);
@@ -131,31 +131,31 @@ void loop() {
 
      //Now 中断 only connect MUX_CH0
 
-    // ——— Read from IMU #2 (channel 6) —————————————————————————————————————
-    selectMuxChannel(MUX_CH6);
-    sensors_event_t accel6, gyro6, temp6;
-    sox6.getEvent(&accel6, &gyro6, &temp6);
+    // ——— Read from IMU #2 (channel 1) —————————————————————————————————————
+    selectMuxChannel(MUX_CH1);
+    sensors_event_t accel1, gyro1, temp1;
+    sox1.getEvent(&accel1, &gyro1, &temp1);
 
-    SixAxis packet6;
-    packet6.ax = accel6.acceleration.x;
-    packet6.ay = accel6.acceleration.y;
-    packet6.az = accel6.acceleration.z;
-    packet6.gx = gyro6.gyro.x;
-    packet6.gy = gyro6.gyro.y;
-    packet6.gz = gyro6.gyro.z;
+    SixAxis packet1;
+    packet1.ax = accel1.acceleration.x;
+    packet1.ay = accel1.acceleration.y;
+    packet1.az = accel1.acceleration.z;
+    packet1.gx = gyro1.gyro.x;
+    packet1.gy = gyro1.gyro.y;
+    packet1.gz = gyro1.gyro.z;
 
-     // ——— Read from IMU #3 (channel 4) —————————————————————————————————————
-    selectMuxChannel(MUX_CH4);
-    sensors_event_t accel4, gyro4, temp4;
-    sox4.getEvent(&accel4, &gyro4, &temp4);
+     // ——— Read from IMU #3 (channel 2) —————————————————————————————————————
+    selectMuxChannel(MUX_CH2);
+    sensors_event_t accel2, gyro2, temp2;
+    sox2.getEvent(&accel2, &gyro2, &temp2);
 
-    SixAxis packet4;
-    packet4.ax = accel4.acceleration.x;
-    packet4.ay = accel4.acceleration.y;
-    packet4.az = accel4.acceleration.z;
-    packet4.gx = gyro4.gyro.x;
-    packet4.gy = gyro4.gyro.y;
-    packet4.gz = gyro4.gyro.z;
+    SixAxis packet2;
+    packet2.ax = accel2.acceleration.x;
+    packet2.ay = accel2.acceleration.y;
+    packet2.az = accel2.acceleration.z;
+    packet2.gx = gyro2.gyro.x;
+    packet2.gy = gyro2.gyro.y;
+    packet2.gz = gyro2.gyro.z;
 
     // ——— Read from IMU #4 (channel 3) —————————————————————————————————————
     selectMuxChannel(MUX_CH3);
@@ -172,8 +172,8 @@ void loop() {
 
     // ——— Transmit both 6-axis packets (48 bytes total) ——————————————————————
     SerialUSB.write((uint8_t*)&packet0, sizeof(packet0));  // 24 bytes
-    SerialUSB.write((uint8_t*)&packet6, sizeof(packet6));  // 24 bytes
-    SerialUSB.write((uint8_t*)&packet4, sizeof(packet4));  // 24 bytes
+    SerialUSB.write((uint8_t*)&packet1, sizeof(packet1));  // 24 bytes
+    SerialUSB.write((uint8_t*)&packet2, sizeof(packet2));  // 24 bytes
     SerialUSB.write((uint8_t*)&packet3, sizeof(packet3));  // 24 bytes
     // delay(5000);
   // }

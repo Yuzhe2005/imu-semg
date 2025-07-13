@@ -1,4 +1,4 @@
-crop_time = [20, 115];
+crop_time = [20, 115]; %change when needed
 fs = 1300;
 
 muscle_names = {'A0', 'A1', 'A2', 'A3'};
@@ -9,7 +9,7 @@ mpf_all = cell(num_muscles, 1);  %Mean Power Frequency
 mf_all  = cell(num_muscles, 1);  %Mean Frequency
 mdf_all = cell(num_muscles, 1);  %Median Power Frquency
 
-data_path = 'C:\Users\dwang\Desktop\IMU+sEMG\data\testing data\sEMG_data_David_612_A1.mat';
+data_path = 'C:\Users\dwang\Desktop\IMU+sEMG\data\testing data';
 
 [A0, A1, A2, A3] = plot_MyowareData(data_path, 'crop_range', [5, -1], 'do_plot', true);
 

@@ -11,7 +11,7 @@ import signal
 
 def main():
     # Configuration
-    SERIAL_PORT = "COM19"       
+    SERIAL_PORT = "COM16"       
     BAUD_RATE   = 2000000      
     WINDOW_SIZE = 1024   
     DURATION = 100 #set duration
@@ -42,13 +42,13 @@ def main():
             mat_data = {
                 'ax': list(all_buffer.IMU[idx].storage['ax']),
                 'ay': list(all_buffer.IMU[idx].storage['ay']),
-                'az': list(all_buffer.IMU[idx].storage['az']),
-                'gx': list(all_buffer.IMU[idx].storage['gx']),
-                'gy': list(all_buffer.IMU[idx].storage['gy']),
-                'gz': list(all_buffer.IMU[idx].storage['gz'])
+                'az': list(all_buffer.IMU[idx].storage['az'])
+                # 'gx': list(all_buffer.IMU[idx].storage['gx']),
+                # 'gy': list(all_buffer.IMU[idx].storage['gy']),
+                # 'gz': list(all_buffer.IMU[idx].storage['gz'])
             }
-            dirPath = "../../data"
-            filename = f"IMU{idx}_data.mat"
+            dirPath = "../../data/testing data"
+            filename = f"IMU{idx}_data_0MVIC.mat"
             file_path = dirPath + "/" + filename
             sio.savemat(file_path, mat_data)
             print(f"[IMU{idx} data saved to {file_path}]")

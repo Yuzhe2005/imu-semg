@@ -10,19 +10,19 @@ class IMUBuffer:
         self.data = {
             'ax': deque(maxlen=window_size),
             'ay': deque(maxlen=window_size),
-            'az': deque(maxlen=window_size),
-            'gx': deque(maxlen=window_size),
-            'gy': deque(maxlen=window_size),
-            'gz': deque(maxlen=window_size)
+            'az': deque(maxlen=window_size)
+            # 'gx': deque(maxlen=window_size),
+            # 'gy': deque(maxlen=window_size),
+            # 'gz': deque(maxlen=window_size)
         }
 
         self.storage = {
             'ax' : [],
             'ay' : [],
-            'az' : [],
-            'gx' : [],
-            'gy' : [],
-            'gz' : []
+            'az' : []
+            # 'gx' : [],
+            # 'gy' : [],
+            # 'gz' : []
         }
 
     def add_sample(self, arr):
@@ -32,15 +32,15 @@ class IMUBuffer:
         self.data['ax'].append(arr[0])
         self.data['ay'].append(arr[1])
         self.data['az'].append(arr[2])
-        self.data['gx'].append(arr[3])
-        self.data['gy'].append(arr[4])
-        self.data['gz'].append(arr[5])
+        # self.data['gx'].append(arr[3])
+        # self.data['gy'].append(arr[4])
+        # self.data['gz'].append(arr[5])
         self.storage['ax'].append(arr[0])
         self.storage['ay'].append(arr[1])
         self.storage['az'].append(arr[2])
-        self.storage['gx'].append(arr[3])
-        self.storage['gy'].append(arr[4])
-        self.storage['gz'].append(arr[5])
+        # self.storage['gx'].append(arr[3])
+        # self.storage['gy'].append(arr[4])
+        # self.storage['gz'].append(arr[5])
         
 
     def get_all_data(self):
@@ -60,18 +60,18 @@ class IMUBuffer:
         return {
             'ax': pad_or_copy(self.data['ax']),
             'ay': pad_or_copy(self.data['ay']),
-            'az': pad_or_copy(self.data['az']),
-            'gx': pad_or_copy(self.data['gx']),
-            'gy': pad_or_copy(self.data['gy']),
-            'gz': pad_or_copy(self.data['gz']),
+            'az': pad_or_copy(self.data['az'])
+            # 'gx': pad_or_copy(self.data['gx']),
+            # 'gy': pad_or_copy(self.data['gy']),
+            # 'gz': pad_or_copy(self.data['gz']),
         }
 
     def cleanStorage(self):
         self.storage = {
             'ax' : [],
             'ay' : [],
-            'az' : [],
-            'gx' : [],
-            'gy' : [],
-            'gz' : []
+            'az' : []
+            # 'gx' : [],
+            # 'gy' : [],
+            # 'gz' : []
         }

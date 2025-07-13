@@ -1,4 +1,4 @@
-function [EMGA0, EMGA1, EMGA2, EMGA3] = plot_MyowareData(data_path, varargin)
+function [EMGA0, EMGA1, EMGA2, EMGA3] = plot_semg(data_path, varargin)
 crop_range = [5, -1];
 do_plot = false;
 for i = 1:2:length(varargin)

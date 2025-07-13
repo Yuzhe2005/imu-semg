@@ -30,7 +30,7 @@ def main(output_filename, time_duration):
             'A2': list(sensor.storage['A2']),
             'A3': list(sensor.storage['A3'])
         }
-        dirPath = "../../data/testing data"
+        dirPath = "../../data/testing data/7_11_DiffMVIC_test_bert_round1"
         if not filename.endswith('.mat'):
             filename += '.mat'
         file_path = f"{dirPath}/{filename}"

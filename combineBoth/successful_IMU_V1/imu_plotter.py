@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
+
+"This plotter plots both 线性加速度 和 角加速度"
+
 class IMUPlotter:
     """
     Creates a grid of real-time plots for 6-axis IMU data stored in IMUBuffer.
